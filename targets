@@ -1,0 +1,7 @@
+#!/bin/sh
+find -L data/ \
+	-type f \
+	-name '*.sam' \
+| sed -r \
+	-e 's#data/#results/sorted/#g' \
+	-e 's#\.sam#.sorted.bam#g' \

@@ -1,13 +1,17 @@
 <sort.mk
 
-SORT_TARGETS=`{ \
-	find -L data/ -type f -name '*.sam' \
-	| sed -e 's#data/#results/sorted/#g' \
-		-e 's#\.sam#.sorted.sam#g' \
-}
+sorted:V:
+	./targets | xargs mk
 
-sorted:V:	$SORT_TARGETS
-
-'results/sorted/%.sorted.sam':	'data/%.sam'
-	mkdir -p `dirname $target`
-	sort $prereq > $target
+'results/sorted/%.sorted.bam':	'data/%.sam'
+	set -x
+	mkdir -p `dirname "$target"`
+	samtools view \
+		-b \
+		"$prereq" \
+	| samtools sort \
+		$SAMTOOLS_SORT_OPTS \
+		-T 'results/sorted/'"$stem"'.tmp' \
+		- \
+	> "$target"'.build' \
+	&& mv "$target"'.build' "$target"
